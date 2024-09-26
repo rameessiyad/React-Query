@@ -1,36 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react'
-import axios from 'axios'
+import { useUserList, useUserListMutate } from '../hooks/useUsersList';
 
 const Listusers = () => {
     const query = useQueryClient();
     const [showUsers, setShowUsers] = useState(false);
 
-    const { data, error, isLoading, isError, isSuccess } = useQuery({
-        queryKey: ['users'],
-        queryFn: async () => {
-            const response = await axios.get('http://localhost:3000/users');
-            return response.data;
-        },
-        enabled: showUsers,
-        refetchOnWindowFocus: false
-    });
+    const { data, error, isLoading, isError, isSuccess } = useUserList();
 
-    const { mutate } = useMutation({
-        mutationFn: async () => {
-            await axios('http://localhost:3000/users', {
-                method: 'POST',
-                data: {
-                    id: 5, name: 'Ramees'
-                }
-            })
-        },
-        onSuccess: () => {
-            query.invalidateQueries({
-                queryKey: ['users']
-            })
-        }
-    })
+    const { mutate } = useUserListMutate();
 
     if (isError) console.log("ERROR!")
 
