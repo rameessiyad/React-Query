@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import './App.css'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import BackupUsers from './components/BackupUsers'
 
 const App = () => {
-
+  const query = useQueryClient();
   const [showUsers, setShowUsers] = useState(false);
 
   const { data, error, isLoading, isError, isSuccess } = useQuery({
@@ -14,16 +14,22 @@ const App = () => {
       const response = await axios.get('http://localhost:3000/users');
       return response.data;
     },
-    enabled: showUsers
+    enabled: showUsers,
+    refetchOnWindowFocus: false
   });
 
   const { mutate } = useMutation({
     mutationFn: async () => {
-      const response = await axios('http://localhost:3000/users', {
+      await axios('http://localhost:3000/users', {
         method: 'POST',
         data: {
           id: 5, name: 'Ramees'
         }
+      })
+    },
+    onSuccess: () => {
+      query.invalidateQueries({
+        queryKey: ['users']
       })
     }
   })
