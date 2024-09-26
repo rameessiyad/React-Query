@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import './App.css'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import BackupUsers from './components/BackupUsers'
 
 const App = () => {
 
@@ -16,7 +17,18 @@ const App = () => {
     enabled: showUsers
   });
 
-  if(isError) console.log("ERROR!")
+  const { mutate } = useMutation({
+    mutationFn: async () => {
+      const response = await axios('http://localhost:3000/users', {
+        method: 'POST',
+        data: {
+          id: 5, name: 'Ramees'
+        }
+      })
+    }
+  })
+
+  if (isError) console.log("ERROR!")
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -29,12 +41,15 @@ const App = () => {
   return (
     <div>
       <button onClick={() => setShowUsers(true)}>Fetch users</button>
+      <button onClick={() => mutate()}>Add user</button>
       <h1>List of users</h1>
       <ul>
         {data && data.map(user =>
           <li key={user.id}>{user?.name}</li>
         )}
       </ul>
+
+      <BackupUsers />
     </div>
   )
 }

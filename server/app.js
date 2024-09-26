@@ -14,7 +14,7 @@ let users = [
 ];
 
 app.get('/users', (req,res) => {
-    res.status(404).json(users);
+    res.status(201).json(users);
 });
 
 app.post('/users', (req,res) => {
